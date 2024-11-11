@@ -1,4 +1,3 @@
-#![cfg_attr(not(target_os = "android"), feature(once_cell))]
 #![doc(html_root_url = "https://stackdoubleflow.github.io/quest-hook-rs/inline_hook")]
 #![warn(
     clippy::all,
