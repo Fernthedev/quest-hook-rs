@@ -97,7 +97,10 @@ mod field_info;
 mod method_info;
 mod object;
 
-#[cfg_attr(any(feature = "unity2018", feature = "il2cpp_v24"), path = "parameter_info.rs")]
+#[cfg_attr(
+    any(feature = "unity2018", feature = "il2cpp_v24"),
+    path = "parameter_info.rs"
+)]
 #[cfg_attr(any(feature = "il2cpp_v31"), path = "parameter_info_stub.rs")]
 mod parameter_info;
 pub mod raw;

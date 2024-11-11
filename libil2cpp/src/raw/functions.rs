@@ -3,8 +3,8 @@
 use libloading::{Library, Symbol};
 use quest_hook_proc_macros::il2cpp_functions;
 use std::ffi::c_void;
-use std::sync::{LazyLock, OnceLock};
 use std::os::raw::c_char;
+use std::sync::{LazyLock, OnceLock};
 
 use super::{
     FieldInfo, Il2CppArray, Il2CppAssembly, Il2CppClass, Il2CppDomain, Il2CppException,
