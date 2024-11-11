@@ -11,8 +11,8 @@ edition = "2021"
 
 [dependencies]
 quest_hook_proc_macros = { path = "../proc_macros" }
-libloading = "0.7"
-thiserror = "1"
+libloading = "0.8"
+thiserror = "2"
 paste = "1"
 serde = { version = "1", optional = true }
 
@@ -24,6 +24,8 @@ optional = true
 
 [features]
 default = []
+unity2022 = []
+unity2021 = []
 unity2019 = []
 unity2018 = []
 cache = []

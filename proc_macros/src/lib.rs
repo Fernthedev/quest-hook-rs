@@ -277,12 +277,12 @@ impl Parse for RangeInput {
         let span = range.span();
 
         let start = range
-            .from
+            .start
             .ok_or_else(|| Error::new(span, "tuple length range must have a lower bound"))?;
         let start = parse_range_bound(*start)?;
 
         let end = range
-            .to
+            .end
             .ok_or_else(|| Error::new(span, "tuple length range must have an upper bound"))?;
         let end = parse_range_bound(*end)?;
 

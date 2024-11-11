@@ -21,9 +21,9 @@ tracing = { version = "0.1", features = [
     "std",
 ], default-features = false, optional = true }
 tracing-subscriber = { version = "0.3", default-features = false, optional = true }
-tracing-error = { version = "0.1", default-features = false, optional = true }
-paranoid-android = { version = "0.1.2", optional = true }
-thiserror = "1"
+tracing-error = { version = "0.2", default-features = false, optional = true }
+paranoid-android = { version = "0.2", optional = true }
+thiserror = "2"
 
 [target.'cfg(not(target_os = "android"))'.dependencies]
 tracing-subscriber = { version = "0.3", features = [
