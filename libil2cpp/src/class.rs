@@ -8,6 +8,8 @@ use crate::{
     Return, Returned, ThisParameter, Type, WrapRaw,
 };
 
+#[cfg(feature = "unity2022")]
+type FieldInfoSlice<'a> = &'a [FieldInfo];
 #[cfg(feature = "unity2019")]
 type FieldInfoSlice<'a> = &'a [FieldInfo];
 #[cfg(feature = "unity2018")]

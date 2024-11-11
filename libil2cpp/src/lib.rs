@@ -74,7 +74,7 @@
 
 //! Wrappers and raw bindings for Unity's libil2cpp
 
-#[cfg(not(any(feature = "unity2019", feature = "unity2018")))]
+#[cfg(not(any(feature = "unity2022", feature = "unity2019", feature = "unity2018")))]
 compile_error!("No Unity version selected");
 
 #[cfg(feature = "trace")]

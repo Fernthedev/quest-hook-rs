@@ -5,6 +5,8 @@
 
 mod functions;
 
+#[cfg_attr(feature = "unity2022", path = "types_2022.rs")]
+#[cfg_attr(feature = "unity2021", path = "types_2021.rs")]
 #[cfg_attr(feature = "unity2019", path = "types_2019.rs")]
 #[cfg_attr(feature = "unity2018", path = "types_2018.rs")]
 mod types;
