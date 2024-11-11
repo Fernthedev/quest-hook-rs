@@ -10,9 +10,9 @@ use crate::{
     Returned, ThisArgument, WrapRaw,
 };
 
-#[cfg(feature = "unity2022")]
+#[cfg(feature = "il2cpp_v31")]
 type ParameterInfoSlice<'a> = &'a [ParameterInfo];
-#[cfg(feature = "unity2019")]
+#[cfg(feature = "il2cpp_v24")]
 type ParameterInfoSlice<'a> = &'a [ParameterInfo];
 #[cfg(feature = "unity2018")]
 type ParameterInfoSlice<'a> = &'a [&'static ParameterInfo];

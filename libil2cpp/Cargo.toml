@@ -24,9 +24,9 @@ optional = true
 
 [features]
 default = []
-unity2022 = []
-unity2021 = []
-unity2019 = []
+il2cpp_v31 = []
+il2cpp_v29 = []
+il2cpp_v24 = []
 unity2018 = []
 cache = []
 trace = ["tracing"]

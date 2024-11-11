@@ -8,9 +8,9 @@ use crate::{
     Return, Returned, ThisParameter, Type, WrapRaw,
 };
 
-#[cfg(feature = "unity2022")]
+#[cfg(feature = "il2cpp_v31")]
 type FieldInfoSlice<'a> = &'a [FieldInfo];
-#[cfg(feature = "unity2019")]
+#[cfg(feature = "il2cpp_v24")]
 type FieldInfoSlice<'a> = &'a [FieldInfo];
 #[cfg(feature = "unity2018")]
 type FieldInfoSlice<'a> = &'a [&'static FieldInfo];

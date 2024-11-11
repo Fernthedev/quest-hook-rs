@@ -34,7 +34,7 @@ tracing-subscriber = { version = "0.3", features = [
 
 [features]
 default = ["util", "cache"]
-unity2019 = ["libil2cpp/unity2019"]
+il2cpp_v24 = ["libil2cpp/il2cpp_v24"]
 unity2018 = ["libil2cpp/unity2018"]
 util = ["tracing", "tracing-error", "tracing-subscriber", "paranoid-android"]
 cache = ["libil2cpp/cache"]

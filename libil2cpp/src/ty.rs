@@ -56,12 +56,12 @@ unsafe impl WrapRaw for Il2CppType {
 }
 
 impl PartialEq for Il2CppType {
-    #[cfg(any(feature = "unity2019", feature = "unity2018"))]
+    #[cfg(any(feature = "il2cpp_v24", feature = "unity2018"))]
     fn eq(&self, other: &Self) -> bool {
         unsafe { self.raw().data.klassIndex == other.raw().data.klassIndex }
     }
 
-    #[cfg(feature = "unity2022")]
+    #[cfg(feature = "il2cpp_v31")]
     fn eq(&self, other: &Self) -> bool {
         unsafe { self.raw().data.__klassIndex == other.raw().data.__klassIndex }
     }
@@ -91,8 +91,8 @@ macro_rules! builtins {
 
         #[doc = "Builtin C# types"]
         #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-        #[cfg_attr(feature = "unity2022", repr(i32))]
-        #[cfg_attr(feature = "unity2019", repr(u32))]
+        #[cfg_attr(feature = "il2cpp_v31", repr(i32))]
+        #[cfg_attr(feature = "il2cpp_v24", repr(u32))]
         #[cfg_attr(feature = "unity2018", repr(i32))]
         pub enum Builtin {
             $(
@@ -105,10 +105,10 @@ macro_rules! builtins {
             #[doc = "Whether the type represents the given [`Builtin`]"]
             #[inline]
             pub fn is_builtin(&self, builtin: Builtin) -> bool {
-                #[cfg(feature = "unity2022")]
+                #[cfg(feature = "il2cpp_v31")]
                 { self.raw().type_() == builtin as i32 }
 
-                #[cfg(feature = "unity2019")]
+                #[cfg(feature = "il2cpp_v24")]
                 { self.raw().type_() == builtin as u32 }
 
                 #[cfg(feature = "unity2018")]

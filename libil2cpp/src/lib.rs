@@ -74,7 +74,7 @@
 
 //! Wrappers and raw bindings for Unity's libil2cpp
 
-#[cfg(not(any(feature = "unity2022", feature = "unity2019", feature = "unity2018")))]
+#[cfg(not(any(feature = "il2cpp_v31", feature = "il2cpp_v24", feature = "unity2018")))]
 compile_error!("No Unity version selected");
 
 #[cfg(feature = "trace")]
@@ -97,8 +97,8 @@ mod field_info;
 mod method_info;
 mod object;
 
-#[cfg_attr(any(feature = "unity2018", feature = "unity2019"), path = "parameter_info.rs")]
-#[cfg_attr(any(feature = "unity2022"), path = "parameter_info_stub.rs")]
+#[cfg_attr(any(feature = "unity2018", feature = "il2cpp_v24"), path = "parameter_info.rs")]
+#[cfg_attr(any(feature = "il2cpp_v31"), path = "parameter_info_stub.rs")]
 mod parameter_info;
 pub mod raw;
 mod string;
