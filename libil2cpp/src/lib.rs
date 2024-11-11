@@ -96,6 +96,9 @@ mod exception;
 mod field_info;
 mod method_info;
 mod object;
+
+#[cfg_attr(any(feature = "unity2018", feature = "unity2019"), path = "parameter_info.rs")]
+#[cfg_attr(any(feature = "unity2022"), path = "parameter_info_stub.rs")]
 mod parameter_info;
 pub mod raw;
 mod string;
