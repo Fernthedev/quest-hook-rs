@@ -34,6 +34,8 @@ tracing-subscriber = { version = "0.3", features = [
 
 [features]
 default = ["util", "cache"]
+il2cpp_v31 = ["libil2cpp/il2cpp_v31"]
+il2cpp_v29 = ["libil2cpp/il2cpp_v29"]
 il2cpp_v24 = ["libil2cpp/il2cpp_v24"]
 unity2018 = ["libil2cpp/unity2018"]
 util = ["tracing", "tracing-error", "tracing-subscriber", "paranoid-android"]
