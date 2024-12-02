@@ -74,7 +74,7 @@
 
 //! Wrappers and raw bindings for Unity's libil2cpp
 
-#[cfg(not(any(feature = "il2cpp_v31", feature = "il2cpp_v24", feature = "unity2018")))]
+#[cfg(not(any(feature = "il2cpp_v31", feature = "il2cpp_v29", feature = "il2cpp_v24", feature = "unity2018")))]
 compile_error!("No Unity version selected");
 
 #[cfg(feature = "trace")]
@@ -125,3 +125,5 @@ pub use typecheck::callee::{Parameter, Parameters, Return, ThisParameter};
 pub use typecheck::caller::{Argument, Arguments, Returned, ThisArgument};
 pub use typecheck::generic::Generics;
 pub use typecheck::ty::Type;
+
+pub type Result<'a, T> = std::result::Result<T, &'a mut Il2CppException>;
