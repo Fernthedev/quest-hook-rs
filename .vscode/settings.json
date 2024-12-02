@@ -1,6 +1,6 @@
 {
   "rust-analyzer.cargo.features": [
-    "il2cpp_v24",
+    "il2cpp_v31",
     "serde"
   ],
   "rust-analyzer.imports.granularity.group": "module"
