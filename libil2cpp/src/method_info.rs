@@ -24,6 +24,8 @@ pub struct MethodInfo(raw::MethodInfo);
 unsafe impl Send for MethodInfo {}
 unsafe impl Sync for MethodInfo {}
 
+pub type Void = ();
+
 impl MethodInfo {
     /// Invoke this method, type checking against its signature with the
     /// provided instance, arguments and return type
