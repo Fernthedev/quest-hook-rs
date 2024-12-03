@@ -25,6 +25,7 @@ unsafe impl Send for MethodInfo {}
 unsafe impl Sync for MethodInfo {}
 
 pub type Void = ();
+pub type Result<'a, T> = std::result::Result<T, &'a mut Il2CppException>;
 
 impl MethodInfo {
     /// Invoke this method, type checking against its signature with the
@@ -33,7 +34,7 @@ impl MethodInfo {
         &self,
         this: T,
         args: A,
-    ) -> Result<R, &mut Il2CppException>
+    ) -> Result<'_, R>
     where
         T: ThisArgument,
         A: Arguments<N>,
@@ -55,7 +56,7 @@ impl MethodInfo {
         &self,
         mut this: T,
         mut args: A,
-    ) -> Result<R, &mut Il2CppException>
+    ) -> Result<'_, R>
     where
         T: ThisArgument,
         A: Arguments<N>,
@@ -77,7 +78,7 @@ impl MethodInfo {
         &self,
         this: *mut c_void,
         args: &mut [*mut c_void],
-    ) -> Result<Option<&'ok mut raw::Il2CppObject>, &'err mut raw::Il2CppException> {
+    ) -> std::result::Result<Option<&'ok mut raw::Il2CppObject>, &'err mut raw::Il2CppException> {
         let mut exception = None;
         let r = raw::runtime_invoke(self.raw(), this, args.as_mut_ptr(), &mut exception);
         match exception {
