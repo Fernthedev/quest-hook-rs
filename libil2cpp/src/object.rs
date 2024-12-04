@@ -7,6 +7,9 @@ use crate::{raw, Argument, Arguments, Il2CppClass, Il2CppException, Returned, Ty
 #[repr(transparent)]
 pub struct Il2CppObject(raw::Il2CppObject);
 
+pub type ByRefMut<T> = *mut T;
+pub type ByRef<T> = *const T;
+
 impl Il2CppObject {
     /// [`Il2CppClass`] of the object
     pub fn class(&self) -> &'static Il2CppClass {
