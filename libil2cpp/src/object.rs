@@ -1,7 +1,7 @@
 use std::fmt;
 use std::ops::DerefMut;
 
-use crate::{raw, Argument, Arguments, Il2CppClass, Il2CppException, Returned, Type, WrapRaw};
+use crate::{raw, Argument, Arguments, Il2CppClass, Il2CppException, Returned, ThisArgument, Type, WrapRaw};
 
 /// An il2cpp object
 #[repr(transparent)]
@@ -115,4 +115,35 @@ where
     for<'a> T: Type<Held<'a> = Option<&'a mut Self>>,
     T: DerefMut<Target = Il2CppObject>,
 {
+}
+
+
+pub trait ObjectType {
+    fn as_object(&self) -> &Il2CppObject;
+    fn as_object_mut(&mut self) -> &mut Il2CppObject;
+}
+
+impl ObjectType for Il2CppObject {
+    fn as_object(&self) -> &Il2CppObject {
+        self
+    }
+
+    fn as_object_mut(&mut self) -> &mut Il2CppObject {
+        self
+    }
+}
+
+// implement object type for anything that can be dereferenced to Il2CppObject
+impl<T> ObjectType for T
+where
+    for<'a> T: Type<Held<'a> = Option<&'a mut Self>>,
+    T: DerefMut<Target = Il2CppObject>,
+{
+    fn as_object(&self) -> &Il2CppObject {
+        self
+    }
+
+    fn as_object_mut(&mut self) -> &mut Il2CppObject {
+        self
+    }
 }
