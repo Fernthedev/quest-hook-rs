@@ -63,6 +63,54 @@ pub unsafe trait Type: 'static {
     }
 }
 
+// implement type for pointers
+unsafe impl<T: Type> Type for *mut T {
+    type Held<'a> = Option<&'a mut T>;
+    type HeldRaw = *mut T;
+
+    const NAMESPACE: &'static str = T::NAMESPACE;
+    const CLASS_NAME: &'static str = T::CLASS_NAME;
+
+    fn matches_reference_argument(ty: &Il2CppType) -> bool {
+        T::matches_reference_argument(ty)
+    }
+
+    fn matches_value_argument(ty: &Il2CppType) -> bool {
+        T::matches_value_argument(ty)
+    }
+
+    fn matches_reference_parameter(ty: &Il2CppType) -> bool {
+        T::matches_reference_parameter(ty)
+    }
+
+    fn matches_value_parameter(ty: &Il2CppType) -> bool {
+        T::matches_value_argument(ty)
+    }
+}
+unsafe impl<T: Type> Type for *const T {
+    type Held<'a> = Option<&'a mut T>;
+    type HeldRaw = *mut T;
+
+    const NAMESPACE: &'static str = T::NAMESPACE;
+    const CLASS_NAME: &'static str = T::CLASS_NAME;
+
+    fn matches_reference_argument(ty: &Il2CppType) -> bool {
+        T::matches_reference_argument(ty)
+    }
+
+    fn matches_value_argument(ty: &Il2CppType) -> bool {
+        T::matches_value_argument(ty)
+    }
+
+    fn matches_reference_parameter(ty: &Il2CppType) -> bool {
+        T::matches_reference_parameter(ty)
+    }
+
+    fn matches_value_parameter(ty: &Il2CppType) -> bool {
+        T::matches_value_argument(ty)
+    }
+}
+
 crate::unsafe_impl_value_type!(in crate for u8 => System.Byte);
 crate::unsafe_impl_value_type!(in crate for i8 => System.SByte);
 crate::unsafe_impl_value_type!(in crate for u16 => System.UInt16);
