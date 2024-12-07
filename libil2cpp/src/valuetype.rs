@@ -11,7 +11,7 @@ pub trait ValueTypeExt: for<'a> Type<Held<'a> = Self> + Sized {
         &mut self,
         name: &str,
         args: A,
-    ) -> Result<R, &mut Il2CppException>
+    ) -> Result<R, &'static mut Il2CppException>
     where
         A: Arguments<N>,
         R: Returned,
@@ -30,7 +30,7 @@ pub trait ValueTypeExt: for<'a> Type<Held<'a> = Self> + Sized {
         &mut self,
         name: &str,
         args: A,
-    ) -> Result<(), &mut Il2CppException>
+    ) -> Result<(), &'static mut Il2CppException>
     where
         A: Arguments<N>,
     {

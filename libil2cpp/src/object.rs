@@ -26,7 +26,7 @@ impl Il2CppObject {
         &mut self,
         name: &str,
         args: A,
-    ) -> Result<R, &mut Il2CppException>
+    ) -> Result<R, &'static mut Il2CppException>
     where
         A: Arguments<N>,
         R: Returned,
@@ -45,7 +45,7 @@ impl Il2CppObject {
         &mut self,
         name: &str,
         args: A,
-    ) -> Result<(), &mut Il2CppException>
+    ) -> Result<(), &'static mut Il2CppException>
     where
         A: Arguments<N>,
     {
