@@ -119,7 +119,7 @@ pub use field_info::FieldInfo;
 pub use method_info::{Il2CppReflectionMethod, MethodInfo, Result, Void};
 pub use object::{Il2CppObject, ObjectExt, ByRef, ByRefMut, ObjectType};
 pub use parameter_info::ParameterInfo;
-pub use raw::{unbox, WrapRaw};
+pub use raw::{unbox, value_box, WrapRaw};
 pub use string::Il2CppString;
 pub use ty::{Builtin, Il2CppReflectionType, Il2CppType};
 pub use typecheck::callee::{Parameter, Parameters, Return, ThisParameter};

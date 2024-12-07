@@ -95,3 +95,8 @@ pub unsafe fn unbox<T>(object: &Il2CppObject) -> T {
     let ptr = (address + size_of::<Il2CppObject>()) as *const T;
     ptr.read_unaligned()
 }
+
+#[inline]
+pub unsafe fn value_box<T: Type>(this: &mut T) -> *mut T {
+    this as *mut T
+}

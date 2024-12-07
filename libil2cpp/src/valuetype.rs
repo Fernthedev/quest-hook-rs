@@ -1,6 +1,6 @@
 use crate::{Arguments, Il2CppException, Returned, ThisArgument, Type};
 
-pub trait ValueTypeExt: for<'a> Type<Held<'a> = Self> + Sized + ThisArgument {
+pub trait ValueTypeExt: for<'a> Type<Held<'a> = Self> + Sized {
     /// Invokes the method with the given name on `self` using the given
     /// arguments, with type checking
     ///
@@ -38,9 +38,11 @@ pub trait ValueTypeExt: for<'a> Type<Held<'a> = Self> + Sized + ThisArgument {
         unsafe { method.invoke_unchecked(self, args) }
     }
 }
+
+
+
 impl<T> ValueTypeExt for T
 where
     T: for<'a> Type<Held<'a> = T>,
-    T: ThisArgument,
 {
 }
