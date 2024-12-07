@@ -96,6 +96,7 @@ mod exception;
 mod field_info;
 mod method_info;
 mod object;
+mod valuetype;
 
 #[cfg_attr(
     any(feature = "unity2018", feature = "il2cpp_v24"),
@@ -125,3 +126,4 @@ pub use typecheck::callee::{Parameter, Parameters, Return, ThisParameter};
 pub use typecheck::caller::{Argument, Arguments, Returned, ThisArgument};
 pub use typecheck::generic::Generics;
 pub use typecheck::ty::Type;
+pub use valuetype::ValueTypeExt;

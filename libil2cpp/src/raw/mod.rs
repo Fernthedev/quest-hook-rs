@@ -16,6 +16,8 @@ pub use types::*;
 
 use std::mem::{size_of, transmute};
 
+use crate::{ThisArgument, Type};
+
 /// Safe wrapper around a raw il2cpp type which can be used in its place
 ///
 /// # Safety
