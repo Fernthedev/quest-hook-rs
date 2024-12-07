@@ -102,6 +102,20 @@ where
         unsafe { transmute((self as *mut Self).read()) }
     }
 }
+unsafe impl<T> ThisArgument for *mut T
+where
+    T: Type,
+{
+    type Type = T;
+
+    fn matches(method: &MethodInfo) -> bool {
+        T::matches_this_argument(method)
+    }
+
+    fn invokable(&mut self) -> *mut c_void {
+        unsafe { transmute((self as *mut Self).read()) }
+    }
+}
 
 unsafe impl<T> ThisArgument for &mut T
 where
@@ -133,6 +147,22 @@ unsafe impl ThisArgument for () {
 // TODO: Remove this once rustfmt stops dropping generics on GATs
 #[rustfmt::skip]
 unsafe impl<T> Argument for Option<&mut T>
+where
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
+    type Type = T;
+
+    fn matches(ty: &Il2CppType) -> bool {
+        T::matches_reference_argument(ty)
+    }
+
+    fn invokable(&mut self) -> *mut c_void {
+        unsafe { transmute((self as *mut Self).read()) }
+    }
+}
+// TODO: Remove this once rustfmt stops dropping generics on GATs
+#[rustfmt::skip]
+unsafe impl<T> Argument for *mut T
 where
     T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
 {
@@ -180,10 +210,40 @@ where
         unsafe { transmute(object) }
     }
 }
+#[rustfmt::skip]
+unsafe impl<T> Returned for *mut T
+where
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
+    type Type = T;
+
+    fn matches(ty: &Il2CppType) -> bool {
+        T::matches_returned(ty)
+    }
+
+    fn from_object(object: Option<&mut Il2CppObject>) -> Self {
+        unsafe { transmute(object) }
+    }
+}
 
 // TODO: Remove this once rustfmt stops dropping generics on GATs
 #[rustfmt::skip]
 unsafe impl<T> Returned for Option<&T>
+where
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
+    type Type = T;
+
+    fn matches(ty: &Il2CppType) -> bool {
+        T::matches_returned(ty)
+    }
+
+    fn from_object(object: Option<&mut Il2CppObject>) -> Self {
+        unsafe { transmute(object) }
+    }
+}
+#[rustfmt::skip]
+unsafe impl<T> Returned for *const T
 where
     T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
 {

@@ -103,6 +103,23 @@ where
         self
     }
 }
+unsafe impl<T> ThisParameter for *mut T
+where
+    T: Type,
+{
+    type Actual = Self;
+
+    fn matches(method: &MethodInfo) -> bool {
+        T::matches_this_parameter(method)
+    }
+
+    fn from_actual(actual: Self::Actual) -> Self {
+        actual
+    }
+    fn into_actual(self) -> Self::Actual {
+        self
+    }
+}
 
 unsafe impl<T> ThisParameter for &mut T
 where
@@ -156,6 +173,24 @@ where
         self
     }
 }
+#[rustfmt::skip]
+unsafe impl<T> Parameter for *mut T
+where
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
+    type Actual = Self;
+
+    fn matches(ty: &Il2CppType) -> bool {
+        T::matches_reference_parameter(ty)
+    }
+
+    fn from_actual(actual: Self::Actual) -> Self {
+        actual
+    }
+    fn into_actual(self) -> Self::Actual {
+        self
+    }
+}
 
 // TODO: Remove this once rustfmt stops dropping generics on GATs
 #[rustfmt::skip]
@@ -180,6 +215,24 @@ where
 // TODO: Remove this once rustfmt stops dropping generics on GATs
 #[rustfmt::skip]
 unsafe impl<T> Return for Option<&mut T>
+where
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
+    type Actual = Self;
+
+    fn matches(ty: &Il2CppType) -> bool {
+        T::matches_return(ty)
+    }
+
+    fn into_actual(self) -> Self::Actual {
+        self
+    }
+    fn from_actual(actual: Self::Actual) -> Self {
+        actual
+    }
+}
+#[rustfmt::skip]
+unsafe impl<T> Return for *mut T
 where
     T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
 {
