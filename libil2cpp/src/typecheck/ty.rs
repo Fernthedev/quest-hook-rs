@@ -124,6 +124,7 @@ crate::unsafe_impl_value_type!(in crate for isize => System.IntPtr);
 crate::unsafe_impl_value_type!(in crate for f32 => System.Single);
 crate::unsafe_impl_value_type!(in crate for f64 => System.Double);
 crate::unsafe_impl_value_type!(in crate for bool => System.Boolean);
+crate::unsafe_impl_value_type!(in crate for char => System.Char);
 
 crate::unsafe_impl_reference_type!(in crate for Il2CppObject => System.Object);
 crate::unsafe_impl_reference_type!(in crate for Il2CppString => System.String);
