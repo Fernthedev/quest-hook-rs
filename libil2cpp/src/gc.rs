@@ -4,11 +4,16 @@ use crate::{Argument, Returned, ThisArgument, Type};
 
 pub struct Gc<T>(*mut T)
 where
-    T: GcType;
+    *mut T: GcType, // assert that *mut T is a GcType
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>;
 
 pub trait GcType = Type + Returned + ThisArgument + Argument;
 
-impl<T: GcType> Gc<T> {
+impl<T> Gc<T>
+where
+    *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
     /// Creates a new `Gc` instance with the given pointer.
     pub fn new(ptr: *mut T) -> Self {
         Self(ptr)
@@ -32,9 +37,10 @@ impl<T: GcType> Gc<T> {
     }
 }
 
-unsafe impl<T: GcType> Type for Gc<T>
+unsafe impl<T> Type for Gc<T>
 where
-    T: Type,
+    *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
 {
     type Held<'a> = Option<&'a mut T>;
 
@@ -61,38 +67,72 @@ where
     }
 }
 
-impl<T: GcType> From<Gc<T>> for Option<&T> {
+impl<T> From<Gc<T>> for Option<&T>
+where
+    *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
     fn from(value: Gc<T>) -> Self {
         value.is_null().not().then(|| unsafe { &*value.0 })
     }
 }
-impl<T: GcType> From<Gc<T>> for Option<&mut T> {
+impl<T> From<Gc<T>> for Option<&mut T>
+where
+    *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
     fn from(value: Gc<T>) -> Self {
         value.is_null().not().then(|| unsafe { &mut *value.0 })
     }
 }
 
-impl<T: GcType> PartialEq for Gc<T> {
+impl<T> PartialEq for Gc<T>
+where
+    *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
     fn eq(&self, other: &Self) -> bool {
         self.0 == other.0
     }
 }
-impl<T: GcType> Eq for Gc<T> {}
+impl<T> Eq for Gc<T>
+where
+    *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
+}
 
-impl<T: GcType> Clone for Gc<T> {
+impl<T> Clone for Gc<T>
+where
+    *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
     fn clone(&self) -> Self {
         *self
     }
 }
-impl<T: GcType> Copy for Gc<T> {}
+impl<T> Copy for Gc<T>
+where
+    *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
+}
 
-impl<T: GcType> Default for Gc<T> {
+impl<T> Default for Gc<T>
+where
+    *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
     fn default() -> Self {
         Self(std::ptr::null_mut())
     }
 }
 
-impl<T: GcType> Deref for Gc<T> {
+impl<T> Deref for Gc<T>
+where
+    *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
     type Target = T;
 
     fn deref(&self) -> &Self::Target {
@@ -106,7 +146,11 @@ impl<T: GcType> Deref for Gc<T> {
         unsafe { &*self.0 }
     }
 }
-impl<T: GcType> DerefMut for Gc<T> {
+impl<T> DerefMut for Gc<T>
+where
+    *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
     fn deref_mut(&mut self) -> &mut Self::Target {
         if self.is_null() {
             panic!(
@@ -119,17 +163,29 @@ impl<T: GcType> DerefMut for Gc<T> {
     }
 }
 
-impl<T: GcType> From<*mut T> for Gc<T> {
+impl<T> From<*mut T> for Gc<T>
+where
+    *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
     fn from(ptr: *mut T) -> Self {
         Self(ptr)
     }
 }
-impl<T: GcType> From<&mut T> for Gc<T> {
+impl<T> From<&mut T> for Gc<T>
+where
+    *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
     fn from(ptr: &mut T) -> Self {
         Self(ptr)
     }
 }
-impl<T: GcType> From<Option<&mut T>> for Gc<T> {
+impl<T> From<Option<&mut T>> for Gc<T>
+where
+    *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
     fn from(ptr: Option<&mut T>) -> Self {
         match ptr {
             Some(ptr) => Self(ptr),
