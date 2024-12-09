@@ -1,8 +1,8 @@
+use std::hash::Hash;
 use std::ops::{Deref, DerefMut};
 
 use crate::{Argument, Returned, ThisArgument, Type};
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Gc<T>(*mut T)
 where
     T: GcType;
@@ -25,6 +25,49 @@ impl<T: GcType> Gc<T> {
         self.0.is_null()
     }
 }
+
+unsafe impl<T: GcType> Type for Gc<T>
+where
+    T: Type,
+{
+    type Held<'a> = Option<&'a mut Self>;
+
+    type HeldRaw = *mut T;
+
+    const NAMESPACE: &'static str = T::NAMESPACE;
+
+    const CLASS_NAME: &'static str = T::CLASS_NAME;
+
+    fn matches_reference_argument(ty: &crate::Il2CppType) -> bool {
+        T::matches_reference_argument(ty)
+    }
+
+    fn matches_value_argument(ty: &crate::Il2CppType) -> bool {
+        T::matches_value_argument(ty)
+    }
+
+    fn matches_reference_parameter(ty: &crate::Il2CppType) -> bool {
+        T::matches_reference_parameter(ty)
+    }
+
+    fn matches_value_parameter(ty: &crate::Il2CppType) -> bool {
+        T::matches_value_parameter(ty)
+    }
+}
+
+impl<T: GcType> PartialEq for Gc<T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
+}
+impl<T: GcType> Eq for Gc<T> {}
+
+impl<T: GcType> Clone for Gc<T> {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl<T: GcType> Copy for Gc<T> {}
 
 impl<T: GcType> Default for Gc<T> {
     fn default() -> Self {
@@ -75,34 +118,5 @@ impl<T: GcType> From<Option<&mut T>> for Gc<T> {
             Some(ptr) => Self(ptr),
             None => Self::null(),
         }
-    }
-}
-
-unsafe impl<T: GcType> Type for Gc<T>
-where
-    T: Type,
-{
-    type Held<'a> = Option<&'a mut Self>;
-
-    type HeldRaw = *mut T;
-
-    const NAMESPACE: &'static str = T::NAMESPACE;
-
-    const CLASS_NAME: &'static str = T::CLASS_NAME;
-
-    fn matches_reference_argument(ty: &crate::Il2CppType) -> bool {
-        T::matches_reference_argument(ty)
-    }
-
-    fn matches_value_argument(ty: &crate::Il2CppType) -> bool {
-        T::matches_value_argument(ty)
-    }
-
-    fn matches_reference_parameter(ty: &crate::Il2CppType) -> bool {
-        T::matches_reference_parameter(ty)
-    }
-
-    fn matches_value_parameter(ty: &crate::Il2CppType) -> bool {
-        T::matches_value_parameter(ty)
     }
 }
