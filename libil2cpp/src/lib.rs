@@ -1,4 +1,5 @@
 #![feature(once_cell, generic_associated_types, never_type)]
+#![feature(trait_alias)]
 #![doc(html_root_url = "https://stackdoubleflow.github.io/quest-hook-rs/libil2cpp")]
 #![warn(
     clippy::all,
@@ -97,6 +98,7 @@ mod field_info;
 mod method_info;
 mod object;
 mod valuetype;
+mod gc;
 
 #[cfg_attr(
     any(feature = "unity2018", feature = "il2cpp_v24"),
@@ -127,3 +129,4 @@ pub use typecheck::caller::{Argument, Arguments, Returned, ThisArgument};
 pub use typecheck::generic::Generics;
 pub use typecheck::ty::Type;
 pub use valuetype::ValueTypeExt;
+pub use gc::{Gc, GcType};
