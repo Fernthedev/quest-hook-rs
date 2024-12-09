@@ -1,3 +1,4 @@
+use std::fmt::{self, Debug, Formatter};
 use std::ops::{Deref, DerefMut, Not};
 
 use crate::{Argument, Returned, ThisArgument, Type};
@@ -190,6 +191,20 @@ where
         match ptr {
             Some(ptr) => Self(ptr),
             None => Self::null(),
+        }
+    }
+}
+
+impl<T> Debug for Gc<T>
+where
+    *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        if self.is_null() {
+            write!(f, "Gc<{}>::null()", T::CLASS_NAME)
+        } else {
+            write!(f, "Gc<{}>({:p})", T::CLASS_NAME, self.0)
         }
     }
 }
