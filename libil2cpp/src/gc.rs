@@ -1,5 +1,4 @@
-use std::hash::Hash;
-use std::ops::{Deref, DerefMut};
+use std::ops::{Deref, DerefMut, Not};
 
 use crate::{Argument, Returned, ThisArgument, Type};
 
@@ -23,6 +22,13 @@ impl<T: GcType> Gc<T> {
     /// Checks if the pointer is null.
     pub fn is_null(&self) -> bool {
         self.0.is_null()
+    }
+
+    pub fn as_opt(&self) -> Option<&T> {
+        self.is_null().not().then(|| unsafe { &*self.0 })
+    }
+    pub fn as_opt_mut(&mut self) -> Option<&mut T> {
+        self.is_null().not().then(|| unsafe { &mut *self.0 })
     }
 }
 
@@ -52,6 +58,17 @@ where
 
     fn matches_value_parameter(ty: &crate::Il2CppType) -> bool {
         T::matches_value_parameter(ty)
+    }
+}
+
+impl<T: GcType> From<Gc<T>> for Option<&T> {
+    fn from(value: Gc<T>) -> Self {
+        value.is_null().not().then(|| unsafe { &*value.0 })
+    }
+}
+impl<T: GcType> From<Gc<T>> for Option<&mut T> {
+    fn from(value: Gc<T>) -> Self {
+        value.is_null().not().then(|| unsafe { &mut *value.0 })
     }
 }
 
