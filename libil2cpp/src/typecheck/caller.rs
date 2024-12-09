@@ -3,7 +3,7 @@ use std::ffi::c_void;
 use std::mem::transmute;
 use std::ptr::null_mut;
 
-use crate::{Builtin, Il2CppObject, Il2CppType, MethodInfo, Type};
+use crate::{Builtin, Gc, GcType, Il2CppObject, Il2CppType, MethodInfo, Type};
 
 /// Trait implemented by types that can be used as a C# `this` arguments
 ///
@@ -116,6 +116,21 @@ where
         unsafe { transmute((self as *mut Self).read()) }
     }
 }
+unsafe impl<T> ThisArgument for Gc<T>
+where
+    *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
+    type Type = T;
+
+    fn matches(method: &MethodInfo) -> bool {
+        T::matches_this_argument(method)
+    }
+
+    fn invokable(&mut self) -> *mut c_void {
+        unsafe { transmute((self as *mut Self).read()) }
+    }
+}
 
 unsafe impl<T> ThisArgument for &mut T
 where
@@ -194,6 +209,26 @@ where
     }
 }
 
+#[rustfmt::skip]
+unsafe impl<T> Argument for Gc<T>
+where 
+    *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+
+{
+    type Type = T;
+
+    fn matches(ty: &Il2CppType) -> bool {
+        T::matches_returned(ty)
+    }
+
+    fn invokable(&mut self) -> *mut c_void {
+        unsafe { transmute((self as *mut Self).read()) }
+        
+    }
+
+}
+
 // TODO: Remove this once rustfmt stops dropping generics on GATs
 #[rustfmt::skip]
 unsafe impl<T> Returned for Option<&mut T>
@@ -210,7 +245,21 @@ where
         unsafe { transmute(object) }
     }
 }
+#[rustfmt::skip]
+unsafe impl<T> Returned for Gc<T>
+where *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
+    type Type = T;
 
+    fn matches(ty: &Il2CppType) -> bool {
+        T::matches_returned(ty)
+    }
+
+    fn from_object(object: Option<&mut Il2CppObject>) -> Self {
+        unsafe { transmute(object) }
+    }
+}
 #[rustfmt::skip]
 unsafe impl<T> Returned for *mut T
 where
