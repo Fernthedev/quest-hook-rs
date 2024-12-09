@@ -36,7 +36,7 @@ unsafe impl<T: GcType> Type for Gc<T>
 where
     T: Type,
 {
-    type Held<'a> = Option<&'a mut Self>;
+    type Held<'a> = Option<&'a mut T>;
 
     type HeldRaw = *mut T;
 
