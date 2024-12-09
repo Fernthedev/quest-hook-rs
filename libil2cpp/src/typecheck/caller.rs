@@ -116,9 +116,10 @@ where
         unsafe { transmute((self as *mut Self).read()) }
     }
 }
-unsafe impl<T> ThisArgument for Gc<T> 
+unsafe impl<T> ThisArgument for Gc<T>
 where
     T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
 {
     type Type = T;
 
@@ -212,8 +213,9 @@ where
 unsafe impl<T> Argument for Gc<T>
 where T: GcType,
     T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+
 {
-    type Type = <T as Returned>::Type;
+    type Type = T;
 
     fn matches(ty: &Il2CppType) -> bool {
         T::matches_returned(ty)
@@ -246,6 +248,7 @@ where
 unsafe impl<T> Returned for Gc<T>
 where T: GcType,
     T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+
 {
     type Type = T;
 
@@ -261,6 +264,8 @@ where T: GcType,
 unsafe impl<T> Returned for *mut T
 where
     T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+
 {
     type Type = T;
 
