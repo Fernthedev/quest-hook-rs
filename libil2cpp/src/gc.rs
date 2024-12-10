@@ -3,6 +3,8 @@ use std::ops::{Deref, DerefMut, Not};
 
 use crate::{Argument, Returned, ThisArgument, Type};
 
+// Wrapper type which implies the type is GC managed lifetime
+#[repr(transparent)]
 pub struct Gc<T>(*mut T)
 where
     *mut T: GcType, // assert that *mut T is a GcType
@@ -36,6 +38,15 @@ where
     pub fn as_opt_mut(&mut self) -> Option<&mut T> {
         self.is_null().not().then(|| unsafe { &mut *self.0 })
     }
+
+    pub fn get_pointer(&self) -> *const T {
+        self.0
+    }
+    pub fn get_pointer_mut(&mut self) -> *mut T {
+        self.0
+    }
+
+
 }
 
 unsafe impl<T> Type for Gc<T>
@@ -164,6 +175,25 @@ where
     }
 }
 
+impl<T> AsRef<T> for Gc<T>
+where
+    *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
+    fn as_ref(&self) -> &T {
+        self
+    }
+}
+impl<T> AsMut<T> for Gc<T>
+where
+    *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
+    fn as_mut(&mut self) -> &mut T {
+        self
+    }
+}
+
 impl<T> From<*mut T> for Gc<T>
 where
     *mut T: GcType,
@@ -205,6 +235,46 @@ where
             write!(f, "Gc<{}>::null()", T::CLASS_NAME)
         } else {
             write!(f, "Gc<{}>({:p})", T::CLASS_NAME, self.0)
+        }
+    }
+}
+
+#[cfg(feature = "serde")]
+mod serde {
+
+    use serde::de::{Deserialize, Deserializer};
+    use serde::ser::{Serialize, Serializer};
+
+    use crate::Type;
+
+    use super::{Gc, GcType};
+
+    impl<'de, T> Deserialize<'de> for Gc<T>
+    where
+        *mut T: GcType,
+        T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+        for<'a> &'a mut T: Deserialize<'de>,
+    {
+        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+        where
+            D: Deserializer<'de>,
+        {
+            let result = <Option<&mut T> as Deserialize>::deserialize(deserializer)?;
+            Ok(result.into())
+        }
+    }
+
+    impl<T> Serialize for Gc<T>
+    where
+        T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+        for<'a> Option<&'a T>: Serialize,
+        *mut T: GcType,
+    {
+        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: Serializer,
+        {
+            <Option<&T> as Serialize>::serialize(&self.as_opt(), serializer)
         }
     }
 }

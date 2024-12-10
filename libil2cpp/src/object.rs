@@ -2,7 +2,8 @@ use std::fmt;
 use std::ops::DerefMut;
 
 use crate::{
-    raw, Argument, Arguments, Il2CppClass, Il2CppException, Returned, ThisArgument, Type, WrapRaw,
+    raw, Argument, Arguments, Gc, Il2CppClass, Il2CppException, Returned, ThisArgument, Type,
+    WrapRaw,
 };
 
 /// An il2cpp object
@@ -10,7 +11,7 @@ use crate::{
 pub struct Il2CppObject(raw::Il2CppObject);
 
 pub type ByRefMut<T> = T; // TODO: *mut T;
-pub type ByRef<T> = T;// TODO: *const T;
+pub type ByRef<T> = T; // TODO: *const T;
 
 impl Il2CppObject {
     /// [`Il2CppClass`] of the object
@@ -102,13 +103,13 @@ pub trait ObjectExt:
     for<'a> Type<Held<'a> = Option<&'a mut Self>> + DerefMut<Target = Il2CppObject> + Sized
 {
     /// Creates a new object using the constructor taking the given arguments
-    fn new<A, const N: usize>(args: A) -> &'static mut Self
+    fn new<A, const N: usize>(args: A) -> Gc<Self>
     where
         A: Arguments<N>,
     {
         let object: &mut Self = Self::class().instantiate();
         object.invoke_void(".ctor", args).unwrap();
-        object
+        object.into()
     }
 }
 #[rustfmt::skip]
