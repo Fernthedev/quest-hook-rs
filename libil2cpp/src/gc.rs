@@ -3,13 +3,14 @@ use std::ops::{Deref, DerefMut, Not};
 
 use crate::{Argument, Returned, ThisArgument, Type};
 
-// Wrapper type which implies the type is GC managed lifetime
+/// Wrapper type which implies the type is GC managed lifetime
 #[repr(transparent)]
 pub struct Gc<T>(*mut T)
 where
     *mut T: GcType, // assert that *mut T is a GcType
     T: for<'a> Type<Held<'a> = Option<&'a mut T>>;
 
+/// Trait alias for types that can be used with the `Gc` wrapper.
 pub trait GcType = Type + Returned + ThisArgument + Argument;
 
 impl<T> Gc<T>
@@ -32,21 +33,41 @@ where
         self.0.is_null()
     }
 
+    /// Returns an `Option` containing a reference to the value if the pointer
+    /// is not null.
     pub fn as_opt(&self) -> Option<&T> {
         self.is_null().not().then(|| unsafe { &*self.0 })
     }
+    /// Returns an `Option` containing a mutable reference to the value if the pointer
+    /// is not null.
     pub fn as_opt_mut(&mut self) -> Option<&mut T> {
         self.is_null().not().then(|| unsafe { &mut *self.0 })
     }
 
-    pub fn get_pointer(&self) -> *const T {
+    /// Returns a constant pointer to the value.
+        pub fn get_pointer(&self) -> *const T {
         self.0
     }
-    pub fn get_pointer_mut(&mut self) -> *mut T {
+    /// Returns a mutable pointer to the value.
+        pub fn get_pointer_mut(&mut self) -> *mut T {
         self.0
     }
 
-
+    /// Converts the current `Gc` instance to a `Gc` instance of another type.
+    ///
+    /// # Safety
+    /// Relies on the `T` implementation of `AsMut<U>` to be correct.
+    pub fn convert<U>(mut self) -> Gc<U>
+    where
+        *mut U: GcType,
+        U: for<'a> Type<Held<'a> = Option<&'a mut U>>,
+        T: AsMut<U>, // ensures T is convertible to U
+    {
+        match self.as_opt_mut() {
+            Some(value) => Gc::from(value.as_mut() as &mut U),
+            None => Gc::null(),
+        }
+    }
 }
 
 unsafe impl<T> Type for Gc<T>
