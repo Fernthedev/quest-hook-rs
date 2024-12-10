@@ -30,3 +30,6 @@ il2cpp_v24 = []
 unity2018 = []
 cache = []
 trace = ["tracing"]
+
+[build-dependencies]
+bindgen = "0.71.1"

@@ -91,13 +91,13 @@ macro_rules! builtins {
 
         #[doc = "Builtin C# types"]
         #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-        #[cfg_attr(feature = "il2cpp_v31", repr(i32))]
+        #[cfg_attr(feature = "il2cpp_v31", repr(u32))]
         #[cfg_attr(feature = "il2cpp_v24", repr(u32))]
         #[cfg_attr(feature = "unity2018", repr(i32))]
         pub enum Builtin {
             $(
                 #[doc = concat!("`", $name, "`")]
-                $variant = $const,
+                $variant = $const as u32,
             )*
         }
 
@@ -106,7 +106,7 @@ macro_rules! builtins {
             #[inline]
             pub fn is_builtin(&self, builtin: Builtin) -> bool {
                 #[cfg(feature = "il2cpp_v31")]
-                { self.raw().type_() == builtin as i32 }
+                { self.raw().type_() == (builtin as u32).try_into().unwrap() }
 
                 #[cfg(feature = "il2cpp_v24")]
                 { self.raw().type_() == builtin as u32 }
