@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::{Builtin, Il2CppType, MethodInfo, Type};
+use crate::{Builtin, Gc, GcType, Il2CppType, MethodInfo, Type};
 
 /// Trait implemented by types that can be used as C# `this` method parameters
 ///
@@ -209,6 +209,68 @@ where
     }
     fn into_actual(self) -> Self::Actual {
         Some(self)
+    }
+}
+// TODO: Remove this once rustfmt stops dropping generics on GATs
+#[rustfmt::skip]
+unsafe impl<T> ThisParameter for Gc<T>
+where
+    T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
+    type Actual = Self;
+
+    fn matches(ty: &MethodInfo) -> bool {
+        T::matches_this_parameter(ty)
+    }
+
+    fn from_actual(actual: Self::Actual) -> Self {
+        actual
+    }
+    fn into_actual(self) -> Self::Actual {
+        self
+    }
+}
+
+// TODO: Remove this once rustfmt stops dropping generics on GATs
+#[rustfmt::skip]
+unsafe impl<T> Parameter for Gc<T>
+where
+    T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
+    type Actual = Self;
+
+    fn matches(ty: &Il2CppType) -> bool {
+        T::matches_reference_parameter(ty)
+    }
+
+    fn from_actual(actual: Self::Actual) -> Self {
+        actual
+    }
+    fn into_actual(self) -> Self::Actual {
+        self
+    }
+}
+
+// TODO: Remove this once rustfmt stops dropping generics on GATs
+#[rustfmt::skip]
+unsafe impl<T> Return for Gc<T>
+where
+    T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
+    type Actual = Self;
+
+    fn matches(ty: &Il2CppType) -> bool {
+        T::matches_return(ty)
+    }
+
+    fn into_actual(self) -> Self::Actual {
+        self
+    }
+    fn from_actual(actual: Self::Actual) -> Self {
+        actual
     }
 }
 
