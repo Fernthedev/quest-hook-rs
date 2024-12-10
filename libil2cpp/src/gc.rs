@@ -1,7 +1,8 @@
 use std::fmt::{self, Debug, Formatter};
+use std::mem::transmute;
 use std::ops::{Deref, DerefMut, Not};
 
-use crate::{Argument, Returned, ThisArgument, Type};
+use crate::{Argument, ObjectType, Returned, ThisArgument, Type};
 
 /// Wrapper type which implies the type is GC managed lifetime
 #[repr(transparent)]
@@ -38,18 +39,18 @@ where
     pub fn as_opt(&self) -> Option<&T> {
         self.is_null().not().then(|| unsafe { &*self.0 })
     }
-    /// Returns an `Option` containing a mutable reference to the value if the pointer
-    /// is not null.
+    /// Returns an `Option` containing a mutable reference to the value if the
+    /// pointer is not null.
     pub fn as_opt_mut(&mut self) -> Option<&mut T> {
         self.is_null().not().then(|| unsafe { &mut *self.0 })
     }
 
     /// Returns a constant pointer to the value.
-        pub fn get_pointer(&self) -> *const T {
+    pub fn get_pointer(&self) -> *const T {
         self.0
     }
     /// Returns a mutable pointer to the value.
-        pub fn get_pointer_mut(&mut self) -> *mut T {
+    pub fn get_pointer_mut(&mut self) -> *mut T {
         self.0
     }
 
@@ -57,7 +58,7 @@ where
     ///
     /// # Safety
     /// Relies on the `T` implementation of `AsMut<U>` to be correct.
-    pub fn convert<U>(mut self) -> Gc<U>
+    pub fn cast<U>(mut self) -> Gc<U>
     where
         *mut U: GcType,
         U: for<'a> Type<Held<'a> = Option<&'a mut U>>,
@@ -66,6 +67,37 @@ where
         match self.as_opt_mut() {
             Some(value) => Gc::from(value.as_mut() as &mut U),
             None => Gc::null(),
+        }
+    }
+    /// Converts the current `Gc` instance to a `Gc` instance of another type.
+    ///
+    /// # Safety
+    /// Relies on the `T` implementation of `AsMut<U>` to be correct.
+    ///
+    /// C++ Implementation
+    /// <https://github.com/QuestPackageManager/beatsaber-hook/blob/2604126ec26dd807da0be0ad974056d1f5fe9575/shared/utils/il2cpp-utils-classes.hpp#L185-L212>
+    pub fn down_cast<U>(mut self) -> Result<Gc<U>, String>
+    where
+        *mut U: GcType,
+        U: for<'a> Type<Held<'a> = Option<&'a mut U>>,
+        T: ObjectType,
+    {
+        match self.as_opt_mut() {
+            Some(value) => {
+                let value_klass = value.as_object().class();
+
+                if value_klass != U::class() && !value_klass.is_assignable_from(U::class()) {
+                    return Err(format!(
+                        "Downcast failed: {} is not assignable from {}",
+                        U::class().name(),
+                        value_klass.name()
+                    ));
+                }
+
+                let cast = (value as *mut T).cast::<U>();
+                Ok(Gc(cast))
+            }
+            None => Ok(Gc::null()),
         }
     }
 }
