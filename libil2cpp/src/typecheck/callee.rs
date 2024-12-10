@@ -215,7 +215,7 @@ where
 #[rustfmt::skip]
 unsafe impl<T> ThisParameter for Gc<T>
 where
-    T: GcType,
+    *mut T: GcType,
     T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
 {
     type Actual = Self;
@@ -236,7 +236,7 @@ where
 #[rustfmt::skip]
 unsafe impl<T> Parameter for Gc<T>
 where
-    T: GcType,
+    *mut T: GcType,
     T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
 {
     type Actual = Self;
@@ -257,7 +257,7 @@ where
 #[rustfmt::skip]
 unsafe impl<T> Return for Gc<T>
 where
-    T: GcType,
+    *mut T: GcType,
     T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
 {
     type Actual = Self;
