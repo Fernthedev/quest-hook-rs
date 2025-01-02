@@ -256,6 +256,15 @@ where
         Self(ptr)
     }
 }
+impl<T> From<*const T> for Gc<T>
+where
+    *mut T: GcType,
+    T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
+    fn from(ptr: *const T) -> Self {
+        Self(ptr as *mut T)
+    }
+}
 impl<T> From<&mut T> for Gc<T>
 where
     *mut T: GcType,
