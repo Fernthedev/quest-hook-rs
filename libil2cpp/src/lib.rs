@@ -128,5 +128,5 @@ pub use typecheck::callee::{Parameter, Parameters, Return, ThisParameter};
 pub use typecheck::caller::{Argument, Arguments, Returned, ThisArgument};
 pub use typecheck::generic::Generics;
 pub use typecheck::ty::Type;
-pub use valuetype::ValueTypeExt;
+pub use valuetype::{ValueTypeExt, ValueTypePadding};
 pub use gc::{Gc, GcType};
