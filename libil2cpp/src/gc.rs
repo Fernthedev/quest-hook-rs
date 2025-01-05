@@ -107,7 +107,7 @@ where
     *mut T: GcType,
     T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
 {
-    type Held<'a> = Option<&'a mut T>;
+    type Held<'a> = Self;
 
     type HeldRaw = *mut T;
 
