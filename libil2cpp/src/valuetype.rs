@@ -42,6 +42,7 @@ pub trait ValueTypeExt: for<'a> Type<Held<'a> = Self> + Sized {
 impl<T> ValueTypeExt for T where T: for<'a> Type<Held<'a> = T> {}
 
 #[repr(transparent)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct ValueTypePadding<const N: usize>(pub [u8; N]);
 
 impl<const N: usize> Default for ValueTypePadding<N> {
