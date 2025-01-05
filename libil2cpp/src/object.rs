@@ -148,3 +148,17 @@ where
         unsafe { self.as_mut().unwrap().as_object_mut() }
     }
 }
+
+impl<T> ObjectType for Gc<T>
+where
+    T: ObjectType,
+    T: for<'a> Type<Held<'a> = std::option::Option<&'a mut T>>,
+{
+    fn as_object(&self) -> &Il2CppObject {
+        self.as_ref().as_object()
+    }
+
+    fn as_object_mut(&mut self) -> &mut Il2CppObject {
+        self.as_mut().as_object_mut()
+    }
+}
