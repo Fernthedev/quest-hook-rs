@@ -132,6 +132,10 @@ where
     }
 }
 
+// Should I do this or force to implement these on a wrapper?
+unsafe impl<T> Send for Gc<T> where T: for<'a> Type<Held<'a> = Option<&'a mut T>> {}
+unsafe impl<T> Sync for Gc<T> where T: for<'a> Type<Held<'a> = Option<&'a mut T>> {}
+
 impl<T> From<Gc<T>> for Option<&T>
 where
     *mut T: GcType,
