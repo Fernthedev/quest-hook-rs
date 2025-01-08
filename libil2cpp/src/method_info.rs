@@ -2,11 +2,12 @@ use std::borrow::Cow;
 use std::ffi::{c_void, CStr};
 use std::mem::transmute;
 use std::ops::{Deref, DerefMut};
+use std::sync::{Arc, Mutex};
 use std::{fmt, slice};
 
 use crate::raw::{METHOD_ATTRIBUTE_ABSTRACT, METHOD_ATTRIBUTE_STATIC, METHOD_ATTRIBUTE_VIRTUAL};
 use crate::{
-    raw, Arguments, Il2CppClass, Il2CppException, Il2CppObject, Il2CppType, ParameterInfo,
+    raw, Arguments, Gc, Il2CppClass, Il2CppException, Il2CppObject, Il2CppType, ParameterInfo,
     Returned, ThisArgument, WrapRaw,
 };
 
@@ -25,16 +26,12 @@ unsafe impl Send for MethodInfo {}
 unsafe impl Sync for MethodInfo {}
 
 pub type Void = ();
-pub type Result<T> = std::result::Result<T, &'static mut Il2CppException>;
+pub type Result<T> = std::result::Result<T, Gc<Il2CppException>>; // Gc<T> adds Sync and Send bounds, allowing for async support
 
 impl MethodInfo {
     /// Invoke this method, type checking against its signature with the
     /// provided instance, arguments and return type
-    pub fn invoke<T, A, R, const N: usize>(
-        &self,
-        this: T,
-        args: A,
-    ) -> Result<R>
+    pub fn invoke<T, A, R, const N: usize>(&self, this: T, args: A) -> Result<R>
     where
         T: ThisArgument,
         A: Arguments<N>,
@@ -64,7 +61,7 @@ impl MethodInfo {
     {
         match self.invoke_raw(this.invokable(), args.invokable().as_mut()) {
             Ok(r) => Ok(R::from_object(transmute(r))),
-            Err(e) => Err(Il2CppException::wrap_mut(e)),
+            Err(e) => Err(Il2CppException::wrap_mut(e).into()),
         }
     }
 
@@ -78,7 +75,8 @@ impl MethodInfo {
         &self,
         this: *mut c_void,
         args: &mut [*mut c_void],
-    ) -> std::result::Result<Option<&'ok mut raw::Il2CppObject>, &'err mut raw::Il2CppException> {
+    ) -> std::result::Result<Option<&'ok mut raw::Il2CppObject>, &'err mut raw::Il2CppException>
+    {
         let mut exception = None;
         let r = raw::runtime_invoke(self.raw(), this, args.as_mut_ptr(), &mut exception);
         match exception {

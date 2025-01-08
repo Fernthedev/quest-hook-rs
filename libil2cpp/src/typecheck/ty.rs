@@ -1,6 +1,5 @@
 use crate::{
-    Il2CppClass, Il2CppObject, Il2CppReflectionMethod, Il2CppReflectionType, Il2CppString,
-    Il2CppType, MethodInfo,
+    Il2CppClass, Il2CppException, Il2CppObject, Il2CppReflectionMethod, Il2CppReflectionType, Il2CppString, Il2CppType, MethodInfo
 };
 
 /// Trait implemented by Rust types that are also C# types
@@ -126,6 +125,7 @@ crate::unsafe_impl_value_type!(in crate for f64 => System.Double);
 crate::unsafe_impl_value_type!(in crate for bool => System.Boolean);
 crate::unsafe_impl_value_type!(in crate for char => System.Char);
 
+crate::unsafe_impl_reference_type!(in crate for Il2CppException => System.Exception);
 crate::unsafe_impl_reference_type!(in crate for Il2CppObject => System.Object);
 crate::unsafe_impl_reference_type!(in crate for Il2CppString => System.String);
 crate::unsafe_impl_reference_type!(in crate for Il2CppReflectionType => System.RuntimeType);

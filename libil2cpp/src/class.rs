@@ -396,7 +396,7 @@ impl Il2CppClass {
         &self,
         name: &str,
         args: A,
-    ) -> Result<R, &mut Il2CppException>
+    ) -> crate::Result<R>
     where
         A: Arguments<N>,
         R: Returned,
@@ -411,7 +411,7 @@ impl Il2CppClass {
         &self,
         name: &str,
         args: A,
-    ) -> Result<(), &mut Il2CppException>
+    ) -> crate::Result<()>
     where
         A: Arguments<N>,
     {

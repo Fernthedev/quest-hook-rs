@@ -29,7 +29,7 @@ impl Il2CppObject {
         &mut self,
         name: &str,
         args: A,
-    ) -> Result<R, &'static mut Il2CppException>
+    ) -> crate::Result<R>
     where
         A: Arguments<N>,
         R: Returned,
@@ -48,7 +48,7 @@ impl Il2CppObject {
         &mut self,
         name: &str,
         args: A,
-    ) -> Result<(), &'static mut Il2CppException>
+    ) -> crate::Result<()>
     where
         A: Arguments<N>,
     {
