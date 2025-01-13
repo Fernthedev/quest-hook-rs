@@ -280,7 +280,7 @@ impl Il2CppClass {
                 debug!("Looking for method: {}", name);
                 debug!("mi.name() == name: {}", mi.name() == name);
                 debug!("T::matches(mi): {}", T::matches(mi));
-                debug!("P::matches(mi): {}", P::matches(mi));
+                debug!("P::matches(mi): {} count {}", P::matches(mi), P::COUNT);
                 debug!("R::matches(mi.return_ty()): {}", R::matches(mi.return_ty()));
                 debug!("");
                 mi.name() == name && T::matches(mi) && P::matches(mi) && R::matches(mi.return_ty())
@@ -292,7 +292,7 @@ impl Il2CppClass {
             (Some(mi), None) | (None, Some(mi)) => Ok(mi),
             // multiple methods found
             (Some(mi1), Some(mi2)) => {
-                let found = vec![mi1, mi2]
+                let found: Vec<FindMethodParameters> = vec![mi1, mi2]
                     .into_iter()
                     .chain(matching)
                     .map(|mi| {
@@ -500,6 +500,11 @@ impl Il2CppClass {
 
     /// Whether the class is assignable from `other`
     pub fn is_assignable_from(&self, other: &Self) -> bool {
+        // optimize
+        if self == other {
+            return true;
+        }
+
         unsafe { raw::class_is_assignable_from(self.raw(), other.raw()) }
     }
 
