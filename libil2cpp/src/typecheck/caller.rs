@@ -3,6 +3,7 @@ use std::ffi::c_void;
 use std::mem::transmute;
 use std::ptr::null_mut;
 
+use crate::byref::{ByRef, ReffableType};
 use crate::{Builtin, Gc, GcType, Il2CppObject, Il2CppType, MethodInfo, Type};
 
 /// Trait implemented by types that can be used as a C# `this` arguments
@@ -223,10 +224,28 @@ where
     }
 
     fn invokable(&mut self) -> *mut c_void {
+        <*mut T as Argument>::invokable(&mut self.get_pointer_mut())
+    }
+}
+
+#[rustfmt::skip]
+unsafe impl<'a, T> Argument for ByRef<'a, T>
+where 
+    T: ReffableType,
+{
+    type Type = T;
+
+    // matches_reference_argument will always return true if ref
+    // regardless if its value type or ref type
+    // will also class check
+    fn matches(ty: &Il2CppType) -> bool {
+        T::matches_reference_argument(ty)
+    }
+
+    fn invokable(&mut self) -> *mut c_void {
         unsafe { transmute((self as *mut Self).read()) }
         
     }
-
 }
 
 // TODO: Remove this once rustfmt stops dropping generics on GATs

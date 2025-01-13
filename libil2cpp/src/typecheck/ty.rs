@@ -25,6 +25,11 @@ pub unsafe trait Type: 'static {
             .unwrap_or_else(|| panic!("Class {}.{} not found", Self::NAMESPACE, Self::CLASS_NAME))
     }
 
+    /// Returns the [`Il2CppType`] of this type
+    fn type_() -> &'static Il2CppType {
+        Self::class().ty()
+    }
+
     /// Whether the type can be used as a `this` argument for the given
     /// [`MethodInfo`]
     fn matches_this_argument(method: &MethodInfo) -> bool {

@@ -98,6 +98,7 @@ mod field_info;
 mod method_info;
 mod object;
 mod valuetype;
+mod byref;
 mod gc;
 
 #[cfg_attr(
@@ -119,7 +120,7 @@ pub use class::{FindMethodError, Il2CppClass};
 pub use exception::Il2CppException;
 pub use field_info::FieldInfo;
 pub use method_info::{Il2CppReflectionMethod, MethodInfo, Result, Void};
-pub use object::{Il2CppObject, ObjectExt, ByRef, ByRefMut, ObjectType};
+pub use object::{Il2CppObject, ObjectExt, ObjectType};
 pub use parameter_info::ParameterInfo;
 pub use raw::{unbox, value_box, WrapRaw};
 pub use string::Il2CppString;
@@ -130,3 +131,4 @@ pub use typecheck::generic::Generics;
 pub use typecheck::ty::Type;
 pub use valuetype::{ValueTypeExt, ValueTypePadding};
 pub use gc::{Gc, GcType};
+pub use byref::{ByRef, ByRefMut};

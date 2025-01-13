@@ -10,9 +10,6 @@ use crate::{
 #[repr(transparent)]
 pub struct Il2CppObject(raw::Il2CppObject);
 
-pub type ByRefMut<T> = T; // TODO: *mut T;
-pub type ByRef<T> = T; // TODO: *const T;
-
 impl Il2CppObject {
     /// [`Il2CppClass`] of the object
     pub fn class(&self) -> &'static Il2CppClass {
