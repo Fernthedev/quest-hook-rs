@@ -197,11 +197,11 @@ impl Il2CppClass {
                 .methods()
                 .iter()
                 .filter(|mi| {
-                    println!("mi.name() == name: {}", mi.name() == name);
-                    println!("mi.is_static(): {}", mi.is_static());
-                    println!("A::matches(mi): {}", A::matches(mi));
-                    println!("R::matches(mi.return_ty()): {}", R::matches(mi.return_ty()));
-                    println!();
+                    debug!("mi.name() == name: {}", mi.name() == name);
+                    debug!("mi.is_static(): {}", mi.is_static());
+                    debug!("A::matches(mi): {}", A::matches(mi));
+                    debug!("R::matches(mi.return_ty()): {}", R::matches(mi.return_ty()));
+                    debug!("");
                     mi.name() == name
                         && mi.is_static()
                         && A::matches(mi)
