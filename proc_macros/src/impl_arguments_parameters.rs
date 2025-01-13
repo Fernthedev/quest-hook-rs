@@ -24,7 +24,15 @@ pub fn expand(range: Range<usize>) -> Result<TokenStream> {
         let log_parameters = generic_params_parameter
             .clone()
             .enumerate()
-            .map(|(n, gp)| quote!(unsafe {crate::debug!("\tChecking parameter {} {:?} vs method param {:?}", #n, stringify!(#gp), params.get(#n).map(|p| p.ty())); }));
+            .map(|(n, gp)| quote!(
+                unsafe {
+                    crate::debug!("\tChecking parameter {} {:?} vs method param {:?}",
+                        #n,
+                        stringify!(#gp), 
+                        params.get(#n).map(|p| (p.ty(), <#gp>::matches(p.ty())))
+                    ); 
+                }
+            ));
 
         let generic_params_argument_tuple = generic_params_argument.clone();
         let generic_params_argument_where = generic_params_argument.clone();
