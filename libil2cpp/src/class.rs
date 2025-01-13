@@ -63,14 +63,13 @@ impl Il2CppClass {
                 unsafe { raw::class_from_name(image, c_namespace.as_ptr(), c_name.as_ptr()) }
                     .map(|class| unsafe { Self::wrap(class) });
 
-            debug!(
-                "class: {class:?} in assembly image {image:?}",
-            );
+            debug!("class: {class:?} in assembly image {image:?}",);
 
             if let Some(class) = class {
                 // Ensure class is initialized
                 // TODO: Call Class::Init somehow
-                let _ = unsafe { raw::class_get_method_from_name(&class.0, c"".as_ptr().cast(), 0) };
+                let _ =
+                    unsafe { raw::class_get_method_from_name(&class.0, c"".as_ptr().cast(), 0) };
 
                 debug!("class found: {class}", class = class);
 
@@ -278,6 +277,7 @@ impl Il2CppClass {
             .methods()
             .iter()
             .filter(|mi| {
+                debug!("Looking for method: {}", name);
                 debug!("mi.name() == name: {}", mi.name() == name);
                 debug!("T::matches(mi): {}", T::matches(mi));
                 debug!("P::matches(mi): {}", P::matches(mi));
