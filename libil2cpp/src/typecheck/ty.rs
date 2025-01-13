@@ -1,5 +1,6 @@
 use crate::{
-    Il2CppClass, Il2CppException, Il2CppObject, Il2CppReflectionMethod, Il2CppReflectionType, Il2CppString, Il2CppType, MethodInfo
+    Il2CppClass, Il2CppException, Il2CppObject, Il2CppReflectionMethod, Il2CppReflectionType,
+    Il2CppString, Il2CppType, MethodInfo,
 };
 
 /// Trait implemented by Rust types that are also C# types
@@ -20,7 +21,8 @@ pub unsafe trait Type: 'static {
 
     /// [`Il2CppClass`] of the type
     fn class() -> &'static Il2CppClass {
-        Il2CppClass::find(Self::NAMESPACE, Self::CLASS_NAME).unwrap()
+        Il2CppClass::find(Self::NAMESPACE, Self::CLASS_NAME)
+            .unwrap_or_else(|| panic!("Class {}.{} not found", Self::NAMESPACE, Self::CLASS_NAME))
     }
 
     /// Whether the type can be used as a `this` argument for the given
