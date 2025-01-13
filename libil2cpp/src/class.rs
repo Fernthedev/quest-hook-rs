@@ -81,6 +81,7 @@ impl Il2CppClass {
             }
         }
 
+        debug!("Class not found {}.{}", namespace, name);
         None
     }
 
@@ -271,10 +272,17 @@ impl Il2CppClass {
         P: Parameters,
         R: Return,
     {
+        debug!("Looking for method: {}", name);
+
         let mut matching = self
             .methods()
             .iter()
             .filter(|mi| {
+                debug!("mi.name() == name: {}", mi.name() == name);
+                debug!("T::matches(mi): {}", T::matches(mi));
+                debug!("P::matches(mi): {}", P::matches(mi));
+                debug!("R::matches(mi.return_ty()): {}", R::matches(mi.return_ty()));
+                debug!("");
                 mi.name() == name && T::matches(mi) && P::matches(mi) && R::matches(mi.return_ty())
             })
             .copied();
