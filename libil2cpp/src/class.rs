@@ -49,6 +49,9 @@ impl Il2CppClass {
         let mut assemblies_count = 0;
         let assemblies = unsafe { raw::domain_get_assemblies(domain, &mut assemblies_count) };
 
+        debug!("assemblies_count: {}", assemblies_count);
+        debug!("Looking for class: {}.{}", namespace, name);
+
         for assembly in assemblies.iter().take(assemblies_count) {
             // For some reason, an assembly might not have an image
             let image = match unsafe { raw::assembly_get_image(assembly) } {
@@ -57,13 +60,19 @@ impl Il2CppClass {
             };
 
             let class =
-                unsafe { raw::class_from_name(image, c_namespace.as_ptr(), c_name.as_ptr()) };
+                unsafe { raw::class_from_name(image, c_namespace.as_ptr(), c_name.as_ptr()) }
+                    .map(|class| unsafe { Self::wrap(class) });
+
+            debug!(
+                "class: {class:?} in assembly image {image:?}",
+            );
+
             if let Some(class) = class {
                 // Ensure class is initialized
                 // TODO: Call Class::Init somehow
-                let _ = unsafe { raw::class_get_method_from_name(class, b"\0".as_ptr().cast(), 0) };
+                let _ = unsafe { raw::class_get_method_from_name(&class.0, c"".as_ptr().cast(), 0) };
 
-                let class = unsafe { Self::wrap(class) };
+                debug!("class found: {class}", class = class);
 
                 #[cfg(feature = "cache")]
                 cache::CLASS_CACHE.with(move |c| c.borrow_mut().insert(key.into(), class));
@@ -397,11 +406,7 @@ impl Il2CppClass {
 
     /// Invokes the `static` method with the given name using the given
     /// arguments, with type checking
-    pub fn invoke<A, R, const N: usize>(
-        &self,
-        name: &str,
-        args: A,
-    ) -> crate::Result<R>
+    pub fn invoke<A, R, const N: usize>(&self, name: &str, args: A) -> crate::Result<R>
     where
         A: Arguments<N>,
         R: Returned,
@@ -412,11 +417,7 @@ impl Il2CppClass {
 
     /// Invokes the `static void` method with the given name using the given
     /// arguments, with type checking
-    pub fn invoke_void<A, const N: usize>(
-        &self,
-        name: &str,
-        args: A,
-    ) -> crate::Result<()>
+    pub fn invoke_void<A, const N: usize>(&self, name: &str, args: A) -> crate::Result<()>
     where
         A: Arguments<N>,
     {

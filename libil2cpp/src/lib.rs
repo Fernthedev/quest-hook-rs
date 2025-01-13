@@ -86,7 +86,7 @@ pub use tracing::{debug, instrument};
 
 #[cfg(not(feature = "trace"))]
 macro_rules! debug {
-    ($_:tt) => {};
+    ($($tt:tt)*) => {};
 }
 #[cfg(not(feature = "trace"))]
 pub use quest_hook_proc_macros::identity as instrument;
