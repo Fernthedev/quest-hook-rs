@@ -219,7 +219,7 @@ where
     type Type = T;
 
     fn matches(ty: &Il2CppType) -> bool {
-        T::matches_returned(ty)
+        T::matches_reference_argument(ty)
     }
 
     fn invokable(&mut self) -> *mut c_void {
