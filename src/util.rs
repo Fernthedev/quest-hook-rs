@@ -40,10 +40,10 @@ pub fn panic_hook(
 
         error!(target: "panic", "panicked at '{}', {}", msg, location);
         if backtrace {
-            error!(target: "panic", "{:?}", Backtrace::force_capture());
+            error!(target: "panic", "{:#?}", Backtrace::force_capture());
         }
         if spantrace {
-            error!(target: "panic", "{:?}", SpanTrace::capture());
+            error!(target: "panic", "{:#?}", SpanTrace::capture());
         }
     })
 }
