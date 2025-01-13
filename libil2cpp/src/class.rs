@@ -280,7 +280,7 @@ impl Il2CppClass {
                 debug!("Looking for method: {}", name);
                 debug!("mi.name() == name: {}", mi.name() == name);
                 debug!("T::matches(mi): {}", T::matches(mi));
-                debug!("P::matches(mi): {} count {}", P::matches(mi), P::COUNT);
+                debug!("P::matches(mi): {} count {} method {}", P::matches(mi), P::COUNT, mi.parameters().len());
                 debug!("R::matches(mi.return_ty()): {}", R::matches(mi.return_ty()));
                 debug!("");
                 mi.name() == name && T::matches(mi) && P::matches(mi) && R::matches(mi.return_ty())
