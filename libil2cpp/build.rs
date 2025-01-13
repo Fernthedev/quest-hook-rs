@@ -20,5 +20,6 @@ fn main() {
     bindings
         .write_to_file(&output_path)
         .expect("Couldn't write bindings!");
+    println!("Returning early");
     panic!("Written bindings to {}", output_path.display());
 }
