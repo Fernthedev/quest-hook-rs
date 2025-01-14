@@ -3,18 +3,19 @@ use std::ops::{Deref, DerefMut};
 
 use crate::{Argument, ObjectType, Returned, ThisArgument, Type};
 
+/// TODO: Add lifetime param
 /// Wrapper type which implies the type is ByRef managed lifetime
 #[repr(transparent)]
-pub struct ByRef<'a, T>(&'a mut T)
+pub struct ByRef<T>(*mut T)
 where
     T: ReffableType;
 
-pub type ByRefMut<'a, T> = ByRef<'a, T>;
+pub type ByRefMut<T> = ByRef< T>;
 
 /// Trait alias for types that can be used with the `ByRef` wrapper.
 pub trait ReffableType = Type + Returned + ThisArgument + Argument;
 
-impl<'a, T> ByRef<'a, T>
+impl<'a, T> ByRef<T>
 where
     T: ReffableType,
 {
@@ -33,7 +34,7 @@ where
     }
 
     pub fn into_actual(self) -> &'a T {
-        self.0
+        unsafe { &*self.0 }
     }
 
     pub fn from_actual(actual: &'a mut T) -> Self {
@@ -43,13 +44,13 @@ where
 
 
 
-unsafe impl<T> Type for ByRef<'_, T>
+unsafe impl<T> Type for ByRef<T>
 where
     T: ReffableType,
 {
-    type Held<'b> = &'b mut T::Held<'b>;
+    type Held<'b> = ByRef< T>;
 
-    type HeldRaw = *mut T::HeldRaw;
+    type HeldRaw = *mut T;
 
     const NAMESPACE: &'static str = T::NAMESPACE;
 
@@ -80,10 +81,10 @@ where
 }
 
 // // Should I do this or force to implement these on a wrapper?
-unsafe impl<T> Send for ByRef<'_, T> where T: ReffableType {}
-unsafe impl<T> Sync for ByRef<'_, T> where T: ReffableType {}
+unsafe impl<T> Send for ByRef< T> where T: ReffableType {}
+unsafe impl<T> Sync for ByRef< T> where T: ReffableType {}
 
-impl<'a, T> From<&'a mut T> for ByRef<'a, T>
+impl<'a, T> From<&'a mut T> for ByRef< T>
 where
     T: ReffableType,
 {
@@ -91,26 +92,26 @@ where
         Self::new(value)
     }
 }
-impl<T> Deref for ByRef<'_, T>
+impl<T> Deref for ByRef< T>
 where
     T: ReffableType,
 {
     type Target = T;
 
     fn deref(&self) -> &Self::Target {
-        self.0
+        unsafe { &*self.0 }
     }
 }
 
-impl<'a, T> DerefMut for ByRef<'a, T>
+impl<'a, T> DerefMut for ByRef< T>
 where
     T: ReffableType,
 {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        self.0
+        unsafe { &mut *self.0 }
     }
 }
-impl<'a, T> PartialEq for ByRef<'_, T>
+impl<'a, T> PartialEq for ByRef< T>
 where
     T: PartialEq,
     T: ReffableType,
@@ -119,14 +120,14 @@ where
         self.0.eq(&other.0)
     }
 }
-impl<T> Eq for ByRef<'_, T>
+impl<T> Eq for ByRef<T>
 where
     T: Eq,
     T: ReffableType,
 {
 }
 
-impl<T> Debug for ByRef<'_, T>
+impl<T> Debug for ByRef< T>
 where
     T: ReffableType,
 {
@@ -135,29 +136,29 @@ where
     }
 }
 
-impl<T> Display for ByRef<'_, T>
+impl<T> Display for ByRef< T>
 where
     T: Display,
     T: ReffableType,{
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
+        write!(f, "{}", self.as_ref())
     }
 }
 
-impl<'a, T> AsRef<T> for ByRef<'a, T>
+impl<'a, T> AsRef<T> for ByRef< T>
 where
     T: ReffableType,
 {
     fn as_ref(&self) -> &T {
-        self.0
+        unsafe { &*self.0 }
     }
 }
 
-impl<'a, T> AsMut<T> for ByRef<'a, T>
+impl<'a, T> AsMut<T> for ByRef< T>
 where
     T: ReffableType,
 {
     fn as_mut(&mut self) -> &mut T {
-        self.0
+        unsafe { &mut *self.0 }
     }
 }

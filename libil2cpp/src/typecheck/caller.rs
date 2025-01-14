@@ -229,7 +229,7 @@ where
 }
 
 #[rustfmt::skip]
-unsafe impl<'a, T> Argument for ByRef<'a, T>
+unsafe impl< T> Argument for ByRef< T>
 where 
     T: ReffableType,
 {
