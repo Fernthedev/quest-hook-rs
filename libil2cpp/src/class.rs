@@ -206,6 +206,7 @@ impl Il2CppClass {
                 .methods()
                 .iter()
                 .filter(|mi| {
+                    debug!("Looking for method: {}.{}", self, name);
                     debug!("mi.name() == name: {}", mi.name() == name);
                     debug!("mi.is_static(): {}", mi.is_static());
                     debug!("A::matches(mi): {}", A::matches(mi));
