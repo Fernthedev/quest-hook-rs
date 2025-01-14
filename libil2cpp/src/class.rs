@@ -224,7 +224,7 @@ impl Il2CppClass {
                 (Some(mi), None) => {
                     #[cfg(feature = "cache")]
                     cache::METHOD_CACHE.with(move |c| c.borrow_mut().insert(key.into(), mi));
-
+                    debug!("Found method: {}.{}", self, name);
                     return Ok(mi);
                 }
 
@@ -281,7 +281,12 @@ impl Il2CppClass {
                 debug!("Looking for method: {}", name);
                 debug!("mi.name() == name: {}", mi.name() == name);
                 debug!("T::matches(mi): {}", T::matches(mi));
-                debug!("P::matches(mi): {} count {} method {}", P::matches(mi), P::COUNT, mi.parameters().len());
+                debug!(
+                    "P::matches(mi): {} count {} method {}",
+                    P::matches(mi),
+                    P::COUNT,
+                    mi.parameters().len()
+                );
                 debug!("R::matches(mi.return_ty()): {}", R::matches(mi.return_ty()));
                 debug!("");
                 mi.name() == name && T::matches(mi) && P::matches(mi) && R::matches(mi.return_ty())
@@ -420,7 +425,14 @@ impl Il2CppClass {
         A: Arguments<N>,
         R: Returned,
     {
-        let method = self.find_static_method::<A, R, N>(name).unwrap();
+        let method = self.find_static_method::<A, R, N>(name).unwrap_or_else(|e| {
+            panic!(
+                "no matching methods found for non-void {}.{}({}) Cause: {e:?}",
+                self,
+                name,
+                N
+            )
+        });
         unsafe { method.invoke_unchecked((), args) }
     }
 
@@ -430,7 +442,14 @@ impl Il2CppClass {
     where
         A: Arguments<N>,
     {
-        let method = self.find_static_method::<A, (), N>(name).unwrap();
+        let method = self.find_static_method::<A, (), N>(name).unwrap_or_else(|e| {
+            panic!(
+                "no matching methods found for void {}.{}({}) Cause: {e:?}",
+                self,
+                name,
+                N
+            )
+        });
         unsafe { method.invoke_unchecked((), args) }
     }
 
