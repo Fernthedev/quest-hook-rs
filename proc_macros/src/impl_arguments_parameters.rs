@@ -26,7 +26,7 @@ pub fn expand(range: Range<usize>) -> Result<TokenStream> {
             .enumerate()
             .map(|(n, gp)| quote!(
                 unsafe {
-                    #[cfg(feature = trace)]
+                    #[cfg(feature = "trace")]
                     crate::debug!("\tChecking parameter {} {:?} vs method param {:?}",
                         #n,
                         stringify!(#gp), 
