@@ -13,7 +13,7 @@ where
 pub type ByRefMut<T> = ByRef< T>;
 
 /// Trait alias for types that can be used with the `ByRef` wrapper.
-pub trait ReffableType = Type + Returned + ThisArgument + Argument;
+pub trait ReffableType = Type + Returned + Argument;
 
 impl<'a, T> ByRef<T>
 where
