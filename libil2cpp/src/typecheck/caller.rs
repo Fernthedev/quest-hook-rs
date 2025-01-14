@@ -132,6 +132,20 @@ where
         unsafe { transmute((self as *mut Self).read()) }
     }
 }
+unsafe impl<T> ThisArgument for ByRef<T>
+where
+    T: ReffableType,
+{
+    type Type = T;
+
+    fn matches(method: &MethodInfo) -> bool {
+        T::matches_this_argument(method)
+    }
+
+    fn invokable(&mut self) -> *mut c_void {
+        unsafe { transmute((self as *mut Self).read()) }
+    }
+}
 
 unsafe impl<T> ThisArgument for &mut T
 where
@@ -268,6 +282,21 @@ where
 unsafe impl<T> Returned for Gc<T>
 where *mut T: GcType,
     T: for<'a> Type<Held<'a> = Option<&'a mut T>>,
+{
+    type Type = T;
+
+    fn matches(ty: &Il2CppType) -> bool {
+        T::matches_returned(ty)
+    }
+
+    fn from_object(object: Option<&mut Il2CppObject>) -> Self {
+        unsafe { transmute(object) }
+    }
+}
+// Can we even return refs?
+#[rustfmt::skip]
+unsafe impl<T> Returned for ByRef<T>
+where T: ReffableType,
 {
     type Type = T;
 
